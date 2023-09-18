@@ -19,11 +19,11 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
 	username = None
 	email = models.EmailField(max_length=70, unique=True)
-	password = models.CharField(max_length=50)
-	is_active = models.BooleanField(default=False)
+	password = models.CharField(max_length=250)
+	is_active = models.BooleanField(default=True)
 	is_superuser = models.BooleanField(default=False)
 	is_verified = models.BooleanField(default=False)
-	name = models.BooleanField(max_length=250)
+	name = models.CharField(max_length=250)
 	age = models.IntegerField()
 
 	created_at = models.DateTimeField(auto_now_add=True)
