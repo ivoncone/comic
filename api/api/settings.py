@@ -12,14 +12,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 #secret variables
 
 SECRET_KEY = config('SECRET_KEY', default='false_message!')
-MONGO_URI = config('MONGO_URI')
-MONGO_NAME = config('MONGO_NAME')
-MONGO_USERNAME = config('MONGO_USERNAME')
-MONGO_PASSWORD = config('MONGO_PASSWORD')
+MONGO_URI = config('MONGO_URI', default='')
+MONGO_NAME = config('MONGO_NAME', default='')
+MONGO_USERNAME = config('MONGO_USERNAME', default='')
+MONGO_PASSWORD = config('MONGO_PASSWORD', default='')
 MARVEL_KEY = config('MARVEL_KEY')
 MARVEL_BASE_URL = config('MARVEL_BASE_URL')
 MARVEL_PRIV_KEY = config('MARVEL_PRIV_KEY')
-
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

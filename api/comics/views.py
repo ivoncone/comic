@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework import generics, viewsets
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 import requests
 import time
@@ -11,13 +12,14 @@ import hashlib
 
 from django_filters import rest_framework as filters
 
-from comics.serializers import ComicSerializer, PersonajeSerializer, BusquedaSerializer
+from comics.serializers import ComicSerializer, PersonajeSerializer
 
-from comics.models import Personaje, Comic, Busqueda
+from comics.models import Personaje, Comic
 
 from api.settings import MARVEL_BASE_URL, MARVEL_KEY, MARVEL_PRIV_KEY
 
 class MarvelSearchView(APIView):
+    permission_classes = (AllowAny,)
     def get(self, request):
         public_key = MARVEL_KEY
         private_key = MARVEL_PRIV_KEY
@@ -51,13 +53,16 @@ class CreateComicCollection(APIView):
         else:
             return Response({'status': 500, 'message': 'no existe este comic'})
 
-class CreateComicCollection(APIView):
+class RetrieveComicCollection(APIView):
     permission_classes = (IsAuthenticated)
     def get(self, request):
-        comics = Comic.objects.all()
-        serializer = ComicSerializer(comics, many=True)
-        return Response({'status': 200, 'message': 'este comic ha sido creado correctamente'})
-
+        if User.objects.filter(user=request.user).exists():
+            user = User.objects.get(user=request.user)
+            comics = Comic.objects.filter(user=user)
+            serializer = ComicSerializer(comics, many=True)
+            return Response({'status': 200, 'message': 'este comic ha sido creado correctamente'})
+        else:
+            return Response({'status': 403, 'message': 'No tienes un perfil de usuario con comics guardados'})
 
 
 

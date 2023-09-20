@@ -1,13 +1,9 @@
 from rest_framework import serializers
-from comics.models import Personaje, Comic, Busqueda
+from comics.models import Personaje, Comic
 
 
 #serializer for user data view
 
-class BusquedaSerializer(serializers.Serializer):
-	class Meta:
-		model = Busqueda
-		fields = ('id', 'personaje', 'comic')
 		
 class PersonajeSerializer(serializers.Serializer):
 	class Meta:
@@ -16,7 +12,8 @@ class PersonajeSerializer(serializers.Serializer):
 	
 
 class ComicSerializer(serializers.Serializer):
+	personaje = PersonajeSerializer(read_only=True)
 	class Meta:
 		model = Comic
-		fields = ('id', 'title', 'image', 'onSaleDate')
+		fields = ('id', 'title', 'personaje', 'image', 'onSaleDate')
 
