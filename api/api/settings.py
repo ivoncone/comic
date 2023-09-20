@@ -2,7 +2,10 @@ from pathlib import Path
 from decouple import config
 import dj_database_url
 import djongo
+import os
 from datetime import timedelta
+from dotenv import load_dotenv
+load_dotenv()
 
 ENV = config('ENV', default='dev')
 
@@ -12,10 +15,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 #secret variables
 
 SECRET_KEY = config('SECRET_KEY', default='false_message!')
-MONGO_URI = config('MONGO_URI', default='')
-MONGO_NAME = config('MONGO_NAME', default='')
-MONGO_USERNAME = config('MONGO_USERNAME', default='')
-MONGO_PASSWORD = config('MONGO_PASSWORD', default='')
 MARVEL_KEY = config('MARVEL_KEY')
 MARVEL_BASE_URL = config('MARVEL_BASE_URL')
 MARVEL_PRIV_KEY = config('MARVEL_PRIV_KEY')
@@ -83,11 +82,9 @@ WSGI_APPLICATION = 'api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'api',
+        'NAME': str(os.getenv('MONGO_NAME')),
         'CLIENT': {
-            'host': 'mongodb+srv://ivonnnecordero:posdata2016@cluster0.vsv6lwi.mongodb.net/?retryWrites=true&w=majority',
-            'username': 'ivonnnecordero',
-            'password': 'posdata2016',
+            'host': str(os.getenv('MONGO_URI')),
         }
 
     }

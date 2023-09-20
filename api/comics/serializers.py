@@ -18,22 +18,24 @@ class ComicSerializer(serializers.Serializer):
 		fields = ('user', 'title', 'personaje', 'image', 'onSaleDate')
 
 class CreateComicSerializer(serializers.Serializer):
-	personaje = PersonajeSerializer(many=True)
+	personaje = PersonajeSerializer(many=True, read_only=True)
 
 	class Meta:
 		model = Comic
 		fields = ('user', 'title', 'personaje', 'image', 'onSaleDate')
 
+"""
 	def create(self, validated_data):
 		personaje = validated_data.pop('personaje')
-		personaje_obj = Personaje.objects.create(**validated_data)
+		personaje_obj = Character.objects.create(**validated_data)
 		for dato in personaje:
-			p = Personaje.objects.create(name=dato["name"],
+			p = Character.objects.create(name=dato["name"],
 					image=dato["image"],
 					appearances=dato["appearances"]
 				)
 			personaje_obj.personaje.add(p)
 		return personaje_obj
+"""
 
 
 

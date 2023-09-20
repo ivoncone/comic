@@ -12,7 +12,7 @@ import hashlib
 
 from django_filters import rest_framework as filters
 
-from comics.serializers import ComicSerializer, PersonajeSerializer, CreateComicCollection
+from comics.serializers import ComicSerializer, PersonajeSerializer, CreateComicSerializer
 
 from comics.models import Character, Comic
 
@@ -93,7 +93,7 @@ class CreateComicCollection(APIView):
     permission_classes = [IsAuthenticated,]
     def post(self, request):
         serializer = CreateComicSerializer(data=request.data)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response({'status': 201, 'message': 'este comic ha sido creado correctamente'})
         else:
