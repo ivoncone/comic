@@ -33,16 +33,30 @@ class MarvelSearchView(APIView):
 
         try:
             response = requests.get(base_url, params=params)
-            print(response)
             response.raise_for_status()
             data = response.json()["data"]["results"]
-            print(data)
-            
-            serializer = BusquedaSerializer(data, many=True)
-            return Response({'data':serializer.data, 'status': 200})
+            extracted_data = [{'id':character['id'], 'name':character['name'], 'image': character['resourceURI'], 'appearances': character['comics']['available']} for character in data]
+            return Response({'data':extracted_data, 'status': 200})
         except requests.exceptions.RequestException as e:
             return Response({'error': 'Unable to fetch data from marvel api', 'status': 500})
 
+
+class CreateComicCollection(APIView):
+    permission_classes = (IsAuthenticated)
+    def post(self, request):
+        serializer = ComicSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status': 201, 'message': 'este comic ha sido creado correctamente'})
+        else:
+            return Response({'status': 500, 'message': 'no existe este comic'})
+
+class CreateComicCollection(APIView):
+    permission_classes = (IsAuthenticated)
+    def get(self, request):
+        comics = Comic.objects.all()
+        serializer = ComicSerializer(comics, many=True)
+        return Response({'status': 200, 'message': 'este comic ha sido creado correctamente'})
 
 
 
