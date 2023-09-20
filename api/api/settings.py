@@ -4,7 +4,7 @@ import dj_database_url
 import djongo
 from datetime import timedelta
 
-
+ENV = config('ENV', default='dev')
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent

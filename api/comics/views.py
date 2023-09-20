@@ -31,43 +31,47 @@ class MarvelSearchView(APIView):
                 'hash': hash_value
         }
 
-        param_charachter = request.query_params.get('characters')
-        param_comic = request.query_params.get('comics')
-        search_param = request.query_params.get('search', '')
+        character = request.query_params.get('character')
+        comic = request.query_params.get('comic')
+        search = request.query_params.get('search', '')
 
-        if param_charachter == 'characters':     
+        # busqueda de personajes
+        if character is not None:     
             base_url = MARVEL_BASE_URL+"characters"
             try:
                 response = requests.get(base_url, params=params)
                 response.raise_for_status()
                 data = response.json()["data"]["results"]
                 extracted_data = [{'id':character['id'], 'name':character['name'], 'image': character['resourceURI'], 'appearances': character['comics']['available']} for character in data]
-                return Response({'data':extracted_data, 'status': 200})
+                filtered_data = [item for item in extracted_data if character.lower() in item['name'].lower()]
+                return Response({'data':filtered_data, 'status': 200})
             except requests.exceptions.RequestException as e:
                 return Response({'error': 'Unable to fetch data from marvel api', 'status': 500})            
         
-        elif param_comic == 'comics':     
+        # busqueda de comics
+        elif comic is not None:     
             base_url = MARVEL_BASE_URL+"comics"
             try:
                 response = requests.get(base_url, params=params)
                 response.raise_for_status()
                 data = response.json()["data"]["results"]
                 extracted_data = [{'id':comic['id'], 'title':comic['title'], 'image':comic['resourceURI'], 'onSaleDate': comic['modified']} for comic in data]
-                return Response({'data':extracted_data, 'status': 200})
+                filtered_data = [item for item in extracted_data if comic.lower() in item['title'].lower()]
+                return Response({'data':filtered_data, 'status': 200})
             except requests.exceptions.RequestException as e:
                 return Response({'error': 'Unable to fetch data from marvel api', 'status': 500})
         
         # busqueda de personajes por nombre
-        elif search_param is not None:
+        elif search is not None:
             # Perform the search based on the query parameter
-            queryset = Personaje.objects.filter(name__icontains=search_param)
             base_url = MARVEL_BASE_URL+"characters"
             try:
                 response = requests.get(base_url, params=params)
                 response.raise_for_status()
                 data = response.json()["data"]["results"]
-                extracted_data = [{'id':character['id'], 'name':character['name'], 'image':character['resourceURI'], 'appearances':character['comics']['available']} for character in query]
-                return Response({'data':extracted_data, 'status': 200})
+                extracted_data = [{'id':character['id'], 'name':character['name'], 'image':character['resourceURI'], 'appearances':character['comics']['items']} for character in data]
+                search_result = [item for item in extracted_data if search.lower() in item['name'].lower()]
+                return Response({'data':search_result, 'status': 200})
             except requests.exceptions.RequestException as e:
                 return Response({'error': 'Unable to fetch data from marvel api', 'status': 500})
 
