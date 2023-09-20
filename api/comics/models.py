@@ -1,4 +1,5 @@
 from django.db import models
+from users.models import User
 
 class Personaje(models.Model):
 	name = models.CharField(max_length=250)
@@ -12,6 +13,7 @@ class Personaje(models.Model):
 		db_table = 'personajes'
 
 class Comic(models.Model):
+	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	title = models.CharField(max_length=250)
 	personaje = models.ForeignKey(Personaje, on_delete=models.CASCADE)
 	image = models.URLField(max_length=250)
@@ -23,3 +25,8 @@ class Comic(models.Model):
 	class Meta:
 		db_table = 'comics'
 
+class Busqueda(models.Model):
+	criterios = models.CharField(max_length=200)
+
+	class Meta:
+		db_table = 'busqueda'
