@@ -12,9 +12,9 @@ import hashlib
 
 from django_filters import rest_framework as filters
 
-from comics.serializers import ComicSerializer, PersonajeSerializer
+from comics.serializers import ComicSerializer, PersonajeSerializer, CreateComicCollection
 
-from comics.models import Personaje, Comic, Busqueda
+from comics.models import Character, Comic
 
 from api.settings import MARVEL_BASE_URL, MARVEL_KEY, MARVEL_PRIV_KEY
 
@@ -33,7 +33,7 @@ class MarvelSearchView(APIView):
 
         character = request.query_params.get('character')
         comic = request.query_params.get('comic')
-        search = request.query_params.get('search', None)
+        search = request.query_params.get('search')
 
         # busqueda de personajes
         if character is not None:     
@@ -43,7 +43,7 @@ class MarvelSearchView(APIView):
                 response.raise_for_status()
                 data = response.json()["data"]["results"]
                 extracted_data = [{'id':character['id'], 'name':character['name'], 'image': character['resourceURI'], 'appearances': character['comics']['available']} for character in data]
-                filtered_data = [item for item in extracted_data if character.lower() in item.get['name', ''].lower()]
+                filtered_data = [item for item in extracted_data if character.lower() in item['name'].lower()]
                 return Response({'data':filtered_data, 'status': 200})
             except requests.exceptions.RequestException as e:
                 return Response({'error': 'Unable to fetch data from marvel api', 'status': 500})            
@@ -90,9 +90,9 @@ class MarvelSearchView(APIView):
             
 
 class CreateComicCollection(APIView):
-    permission_classes = (IsAuthenticated)
+    permission_classes = [IsAuthenticated,]
     def post(self, request):
-        serializer = ComicSerializer(data=request.data)
+        serializer = CreateComicSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({'status': 201, 'message': 'este comic ha sido creado correctamente'})
@@ -100,7 +100,7 @@ class CreateComicCollection(APIView):
             return Response({'status': 500, 'message': 'no existe este comic'})
 
 class RetrieveComicCollection(APIView):
-    permission_classes = (IsAuthenticated)
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         if User.objects.filter(user=request.user).exists():
             user = User.objects.get(user=request.user)

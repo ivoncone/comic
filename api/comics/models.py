@@ -1,22 +1,23 @@
 from django.db import models
 from users.models import User
 
-class Personaje(models.Model):
+class Character(models.Model):
 	name = models.CharField(max_length=250)
 	image = models.URLField(max_length=250, null=True, blank=True)
-	appearances = models.CharField(max_length=250, null=True, blank=True)
+	appearances = models.IntegerField(null=True, blank=True)
 
 	def __str__(self):
 		return self.name
 
 	class Meta:
-		db_table = 'personajes'
+		db_table = 'characters'
 
 class Comic(models.Model):
-	user = models.OneToOneField(User, on_delete=models.CASCADE)
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	comic_id = models.IntegerField(null=True, blank=True)
 	title = models.CharField(max_length=250)
-	personaje = models.ForeignKey(Personaje, on_delete=models.CASCADE)
-	image = models.URLField(max_length=250)
+	personaje = models.ForeignKey(Character, on_delete=models.CASCADE)
+	image = models.URLField(max_length=250, null=True, blank=True)
 	onSaleDate = models.DateField()
 
 	def __str__(self):
@@ -25,8 +26,4 @@ class Comic(models.Model):
 	class Meta:
 		db_table = 'comics'
 
-class Busqueda(models.Model):
-	criterios = models.CharField(max_length=200)
 
-	class Meta:
-		db_table = 'busqueda'
