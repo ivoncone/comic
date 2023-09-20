@@ -1,0 +1,1 @@
+web: gunicorn --pythonpath api api.wsgi:application  --error-logfile - --access-logfile - --workers 4
