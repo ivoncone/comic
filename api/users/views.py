@@ -36,14 +36,13 @@ class LoginView(APIView):
 			return Response({'status': 403, 'message':'esta contraseña no es correcta'})
 
 		access = AccessToken.for_user(user)
-		refresh = RefreshToken.for_user(user)
+
 
 		return Response({'status': 200,
 			'id': user.id,
 			'name': user.name,
 			'age': user.age,
-			'access': str(access),
-			'refresh': str(refresh),
+			'token': str(access),
 		})
 		
 #vista de usuario 
