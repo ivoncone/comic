@@ -16,6 +16,10 @@ MONGO_URI = config('MONGO_URI')
 MONGO_NAME = config('MONGO_NAME')
 MONGO_USERNAME = config('MONGO_USERNAME')
 MONGO_PASSWORD = config('MONGO_PASSWORD')
+MARVEL_KEY = config('MARVEL_KEY')
+MARVEL_BASE_URL = config('MARVEL_BASE_URL')
+MARVEL_PRIV_KEY = config('MARVEL_PRIV_KEY')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -36,8 +40,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'djongo',
+    'django_filters',
     #project_apps
     'users',
+    'comics',
 ]
 
 MIDDLEWARE = [
@@ -93,7 +99,13 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
 
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
+    #'DEFAULT_PAGINATION_CLASS': ('rest_framework.pagination.PageNumberPagination',
+     #   'PAGE_SIZE': 10,
+    #),
 
 }
 
