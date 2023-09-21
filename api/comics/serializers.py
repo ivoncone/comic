@@ -21,6 +21,9 @@ class CreateComicSerializer(serializers.Serializer):
 		model = Comic
 		fields = ('user', 'comic_id', 'title', 'image', 'onSaleDate')
 
+	def create(self, validated_data):
+		return Comic.objects.create(**validated_data)
+
 
 
 

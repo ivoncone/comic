@@ -1,7 +1,9 @@
 from django.urls import path
 
 from comics import views
-from comics.views import MarvelSearchView, CreateComicCollection, RetrieveComicCollection
+from .views.marvelView import MarvelSearchView
+from .views.comicView import RetrieveComicCollection
+from .views.createComic import CreateComicCollection
 
 urlpatterns = [
 	path('searchComics/', MarvelSearchView.as_view()),

@@ -1,38 +1,16 @@
 from django.shortcuts import render
-
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
-from rest_framework import generics, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-
 import requests
-import time
-import hashlib
+from ..hashers import payload
 
-from django_filters import rest_framework as filters
-
-from comics.serializers import ComicSerializer, PersonajeSerializer, CreateComicSerializer
-
-from comics.models import Character, Comic
-from users.models import User
-
-from api.settings import MARVEL_BASE_URL, MARVEL_KEY, MARVEL_PRIV_KEY
-
+from api.settings import MARVEL_BASE_URL
 #vista para filtros de comics y personajes
 class MarvelSearchView(APIView):
     permission_classes = (AllowAny,)
     def get(self, request):
-        public_key = MARVEL_KEY
-        private_key = MARVEL_PRIV_KEY
-        timestamp = str(int(time.time()))
-        hash_value = hashlib.md5((timestamp + private_key + public_key).encode()).hexdigest()
-        params = {
-                'apikey': public_key,
-                'ts': timestamp,
-                'hash': hash_value
-        }
-
+        params = payload()
         character = request.query_params.get('character')
         comic = request.query_params.get('comic')
         search = request.query_params.get('search')
@@ -90,27 +68,6 @@ class MarvelSearchView(APIView):
         except requests.exceptions.RequestException as e:
             return Response({'error': 'Unable to fetch data from marvel api', 'status': 500})
             
-
-class CreateComicCollection(APIView):
-    permission_classes = [IsAuthenticated,]
-    def post(self, request):
-        serializer = CreateComicSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'status': 201, 'message': 'este comic ha sido creado correctamente'})
-        else:
-            return Response({'status': 500, 'message': 'no existe este comic'})
-
-class RetrieveComicCollection(APIView):
-    permission_classes = [IsAuthenticated]
-    def get(self, request):
-        user = request.user.id 
-        if Comic.objects.filter(user=user).exists():
-            comics = Comic.objects.filter(user=user)
-            serializer = ComicSerializer(comics, many=True)
-            return Response({'status': 200, 'message': 'este comic ha sido creado correctamente'})
-        else:
-            return Response({'status': 403, 'message': 'No tienes un perfil de usuario con comics guardados'})
 
 
 
