@@ -14,7 +14,7 @@ from django.contrib.auth.hashers import check_password
 
 
 
-#register new user and see data
+#register new user and see data CA1
 class CreateUserView(APIView):
 	permission_classes = (AllowAny, )
 	def post(self, request):
@@ -24,7 +24,7 @@ class CreateUserView(APIView):
 			return Response({'status': 201, 'message': 'este usuario ha sido creado correctamente'})
 		else:
 			return Response({'status':403, 'message': 'ya existe este usuario'})
-#Login view
+#Login view CA2
 class LoginView(APIView):
 	def post(self, request):
 		email = request.data['email']
@@ -45,7 +45,7 @@ class LoginView(APIView):
 			'token': str(access),
 		})
 		
-#vista de usuario 
+#vista de usuario CA3
 class UserView(APIView):
 	permission_classes = [IsAuthenticated]
 	def get(self, request):
