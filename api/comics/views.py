@@ -15,9 +15,11 @@ from django_filters import rest_framework as filters
 from comics.serializers import ComicSerializer, PersonajeSerializer, CreateComicSerializer
 
 from comics.models import Character, Comic
+from users.models import User
 
 from api.settings import MARVEL_BASE_URL, MARVEL_KEY, MARVEL_PRIV_KEY
 
+#vista para filtros de comics y personajes
 class MarvelSearchView(APIView):
     permission_classes = (AllowAny,)
     def get(self, request, *args, **kwargs):
@@ -35,9 +37,9 @@ class MarvelSearchView(APIView):
         comic = request.query_params.get('comic')
         search = request.query_params.get('search')
 
-        # busqueda de personajes
+        # busqueda de personajes CA3
         if character is not None:     
-            base_url = MARVEL_BASE_URL+"characters"
+            base_url = f"{MARVEL_BASE_URL}characters?name={character}"
             try:
                 response = requests.get(base_url, params=params)
                 response.raise_for_status()
@@ -48,7 +50,7 @@ class MarvelSearchView(APIView):
             except requests.exceptions.RequestException as e:
                 return Response({'error': 'Unable to fetch data from marvel api', 'status': 500})            
         
-        # busqueda de comics
+        # busqueda de comics CA3
         elif comic is not None:     
             base_url = MARVEL_BASE_URL+"comics"
             try:
@@ -61,10 +63,10 @@ class MarvelSearchView(APIView):
             except requests.exceptions.RequestException as e:
                 return Response({'error': 'Unable to fetch data from marvel api', 'status': 500})
         
-        # busqueda de personajes por nombre
+        # busqueda de personajes y comics por nombre  CA1
         elif search is not None:
             # Perform the search based on the query parameter
-            base_url = MARVEL_BASE_URL+"characters"
+            base_url = f"{MARVEL_BASE_URL}characters?nameStartsWith={search}"
             try:
                 response = requests.get(base_url, params=params)
                 response.raise_for_status()
@@ -75,7 +77,7 @@ class MarvelSearchView(APIView):
             except requests.exceptions.RequestException as e:
                 return Response({'error': 'Unable to fetch data from marvel api', 'status': 500})
 
-        # todos los personajes de la a-z
+        # todos los personajes de la a-z CA2
         else:
             base_url = MARVEL_BASE_URL+"characters"
 
@@ -93,7 +95,7 @@ class CreateComicCollection(APIView):
     permission_classes = [IsAuthenticated,]
     def post(self, request):
         serializer = CreateComicSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
+        if serializer.is_valid():
             serializer.save()
             return Response({'status': 201, 'message': 'este comic ha sido creado correctamente'})
         else:
@@ -102,8 +104,8 @@ class CreateComicCollection(APIView):
 class RetrieveComicCollection(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        if User.objects.filter(user=request.user).exists():
-            user = User.objects.get(user=request.user)
+        user = request.user.id 
+        if Comic.objects.filter(user=user).exists():
             comics = Comic.objects.filter(user=user)
             serializer = ComicSerializer(comics, many=True)
             return Response({'status': 200, 'message': 'este comic ha sido creado correctamente'})

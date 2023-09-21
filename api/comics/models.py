@@ -16,7 +16,6 @@ class Comic(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	comic_id = models.IntegerField(null=True, blank=True)
 	title = models.CharField(max_length=250)
-	personaje = models.ForeignKey(Character, on_delete=models.CASCADE)
 	image = models.URLField(max_length=250, null=True, blank=True)
 	onSaleDate = models.DateField()
 
